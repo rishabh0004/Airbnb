@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Airbnb Price Predition</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
+
+body, html {
+  height: 100%;
+  line-height: 1.8;
+}
+
+/* Full height image header */
+.bgimg-1 {
+  background-position: center;
+  background-size: cover;
+  background-image: url("/w3images/mac.jpg");
+  min-height: 100%;
+}
+
+.w3-bar .w3-button {
+  padding: 16px;
+}
+
+  .button {
+        padding: 15px 100px;
+        margin: 10px 4px;
+        color: #eee;
+        font-family: sans-serif;
+        text-transform: uppercase;
+        text-align: center;
+        position: relative;
+        text-decoration: none;
+        display: inline-block;
+        border: 1px solid;
+      }
+      .button::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: block;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        -webkit-transform: scaleY(.1);
+        transform: scaleY(.1);
+        transition: all .4s
+      }
+      .button:hover {
+        color: #b414ba;
+      }
+      .button:hover::before {
+        opacity: 1;
+        background-color: #f7c2f9;
+        -webkit-transform: scaleY(1);
+        transform: scaleY(1);
+        transition: -webkit-transform .6s cubic-bezier(.08, .35, .13, 1.02), opacity .4s;
+        transition: transform .6s cubic-bezier(.08, .35, .13, 1.02), opacity
+      }
+
+
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="bgimg-1 w3-display-container w3-grayscale-min" id="home" style="padding:128px 16px">
+  <div class="w3-display-left w3-text-white" style="padding:48px">
+	<img class="w3-image" src="{{ url_for('static', filename='airbnb.jpg') }}" alt= "Airbnb" width="1400" height="80" align="center">
+    <p align="right"><a href="#about" class="w3-button w3-white w3-padding-large w3-large w3-margin-top w3-opacity w3-hover-opacity-off">Learn more and Improve your Airbnb Revenue</a></p>
+  </div> 
+</header>
+
+<!-- Navbar (sit on top) -->
+<div class="w3-top">
+  <div class="w3-bar w3-white w3-card" id="myNavbar">
+    <a href="#home" class="w3-bar-item w3-button w3-wide">WELCOME TO AIRBNB RENTAL PRICING</a>
+    <!-- Right-sided navbar links -->
+    <div class="w3-right w3-hide-small">
+      <a href="#about" class="w3-bar-item w3-button">ABOUT</a>
+      <a href="#team" class="w3-bar-item w3-button"><i class="fa fa-user"></i> TEAM</a>
+      <a href="#pricing" class="w3-bar-item w3-button"><i class="fa fa-usd"></i> PRICING</a>
+	  <a href="#trend" class="w3-bar-item w3-button"><i class="fa fa-search"></i> TREND</a>
+	  <a href="#review" class="w3-bar-item w3-button"><i class="fa fa-comment"></i> Reviews</a>
+      <a href="#contact" class="w3-bar-item w3-button"><i class="fa fa-envelope"></i> CONTACT</a>
+    </div>
+  </div>
+</div>
+
+<!-- Pricing Section -->
+<div class="w3-dark-grey" style="padding:50px 20px" id="pricing">
+  <div class="w3-center">
+			<h1 class="w3-red w3-xlarge">Airbnb Rental Price Prediction</h1>
+
+			 <!-- Main Input For Receiving Query to our ML -->
+			<form action="{{ url_for('predict')}}"method="post">
+				
+			<table class="w3-white" align="center" >
+				<tr align="left">
+					<td>Total Number of Listings:</td>
+					<td style="width:70%"><input type="number" name="host_total_listings_count" placeholder="Number of Listings" min="1" max="30" required="required" style="width:60%"/></td>
+				</tr>
+				<tr align="left">
+					<td>Type of Property</td>
+					<td><select id="new_property_type" name="new_property_type" style="width:60%">
+							<option hidden disabled selected value> -- Select a Property Type -- </option>
+							<option value="home">Home</option>
+							<option value="rental unit">Rental Unit</option>
+							<option value="Condo">Condo</option>
+							<option value="townhome">Townhome</option>
+							<option value="loft">Loft</option>
+							<option value="guest suite">Guest Suite</option>
+							<option value="serviced apartment">Serviced Apartment</option>
+							<option value="tiny home">Tiny Home</option>
+							<option value="guesthome">Guest Home</option>
+							<option value="bed and breakfast">Bed and Breakfast</option>
+							<option value="private room">Private Room</option>
+							<option value="place">Private Place</option>
+							<option value="villa">Villa</option>
+							<option value="hostel">Hostel</option>
+							<option value="camper/rv">Camper/RV</option>
+							<option value="boutique hotel">Boutique Hotel</option>
+							<option value="hotel">Hotel</option>
+							<option value="cottage">Cottage</option>
+							<option value="aparthotel">Apartment Hotel</option>
+							<option value="barn">Barn</option>
+							<option value="boat">Boat</option>
+							<option value="casa particular">Casa particular</option>
+							<option value="vacation home">Vacation Home</option>
+							<option value="campsite">Camp Site</option>
+						</select>
+					</td>
+				</tr>
+				<tr align="left">
+					<td>Type of Room :</td>
+					<td><select id="room_type" name="Room Type" style="width:60%">
+							<option hidden disabled selected value> -- Select a Room Type -- </option>
+							<option value="Entire home/apt">Entire home/apt</option>
+							<option value="Private Room">Private Room</option>
+							<option value="Shared Room">Shared Room</option>
+						</select>
+					</td>
+				</tr>
+				<tr align="left">
+					<td>Maximum tenants in property:</td>
+					<td><input type="number" name="accommodates" placeholder="Maximum tenants in property" min="1" max="16" required="required" style="width:60%"/></td>
+				</tr>
+				</tr>
+				<tr align="left">
+					<td>Number of Bathrooms:</td>
+					<td ><select id="bathrooms_count" name="Bathrooms Count" class="w3-padding-16" style="width:60%" style="width:20">
+							<option hidden disabled selected value> -- Select a Number of Bathrooms -- </option>
+							<option value="0.5"> Half Bath</option>
+							<option value="1">1 Bath</option>
+							<option value="1.5">1.5 Baths</option>
+							<option value="2">2 Baths</option>
+							<option value="2.5">2.5 Baths</option>
+							<option value="3">3 Baths</option>
+							<option value="3.5">3.5 Bath</option>
+							<option value="4">4 Bath</option>
+							<option value="4.5">4.5 Bath</option>
+							<option value="5">5 Baths</option>
+							<option value="5.5">5.5 Bath</option>
+							<option value="6">6 Bath</option>
+							<option value="7.5">7.5 Bath</option>
+						</select>
+					</td>
+				</tr>
+				<tr align="left">
+					<td>Bathroom Type</td>
+					<td><select id="Shared/Category" name="Shared/Category" style="width:60%">
+							<option hidden disabled selected value> -- Select a Bathroom Type -- </option>
+							<option value="private">Private</option>
+							<option value="shared">Shared</option>
+						</select>
+					</td>
+				</tr>
+				<tr align="left">
+					<td>Number of Bedrooms</td>
+					<td><input type="number" name="bedrooms" placeholder="Number of Bedrooms" min="0" max="9" required="required" style="width:60%"/></td>
+				</tr>
+				<tr align="left">
+					<td>Number of beds</td>
+					<td><input type="number" name="beds" placeholder="Number of beds" min="0" max="18" required="required" style="width:60%"/></td>
+				</tr>
+				<tr align="left">
+					<td>Minimum nights</td>
+					<td><input type="number" name="minimum_nights" placeholder="Minimum nights" min="1" max="30" required="required" style="width:60%"/></td>
+				</tr>
+				<tr align="left">
+					<td>Maximum nights</td>
+					<td><input type="number" name="maximum_nights" placeholder="Maximum nights" min="1" max="1200" required="required" style="width:60%" /></td>
+				</tr>
+				<tr align="left">
+					<td>Next 30 days Avaliablity</td>
+					<td><input type="number" name="availability_30" placeholder="Days available in next 30 days" min="1" max="30" required="required" style="width:60%"/></td>
+				</tr>
+				<tr align="left">
+					<td>Area</td>
+					<td><select name="neighbourhood_cleansed" id="neighbourhood_cleansed" style="width:60%">
+								<option hidden disabled selected value> -- Select area -- </option>
+								<option value="2">Agincourt North</option>
+								<option value="2">Agincourt South-Malvern West</option>
+								<option value="2">Alderwood</option>
+								<option value="2">Alta Vista</option>
+								<option value="3">Annex</option>
+								<option value="2">Banbury-Don Mills</option>
+								<option value="2">Barrhaven</option>
+								<option value="2">Bathurst Manor</option>
+								<option value="2">Bay</option>
+								<option value="3">Bay Street Corridor</option>
+								<option value="3">Bayview Village</option>
+								<option value="2">Bayview Woods-Steeles</option>
+								<option value="2">Beacon Hill-Cyrville</option>
+								<option value="2">Bedford Park-Nortown</option>
+								<option value="3">Beechborough-Greenbrook</option>
+								<option value="2">Bendale</option>
+								<option value="2">Birchcliffe-Cliffside</option>
+								<option value="1">Black Creek</option>
+								<option value="2">Blake-Jones</option>
+								<option value="1">Briar Hill-Belgravia</option>
+								<option value="4">Bridle Path-Sunnybrook-York Mills</option>
+								<option value="3">Broadview North</option>
+								<option value="1">Brookhaven-Amesbury</option>
+								<option value="2">Cabbagetown-South St.James Town</option>
+								<option value="1">Caledonia-Fairbank</option>
+								<option value="3">Capital</option>
+								<option value="3">Casa Loma</option>
+								<option value="3">Centennial Scarborough</option>
+								<option value="3">Church-Yonge Corridor</option>
+								<option value="2">Clairlea-Birchmount</option>
+								<option value="2">Clanton Park</option>
+								<option value="2">Cliffcrest</option>
+								<option value="2">College</option>
+								<option value="2">Corso Italia-Davenport</option>
+								<option value="2">Cumberland</option>
+								<option value="2">Danforth</option>
+								<option value="2">Danforth East York</option>
+								<option value="2">Don Valley Village</option>
+								<option value="2">Dorset Park</option>
+								<option value="2">Dovercourt-Wallace Emerson-Junction</option>
+								<option value="2">Downsview-Roding-CFB</option>
+								<option value="2">Dufferin Grove</option>
+								<option value="2">East End-Danforth</option>
+								<option value="2">Edenbridge-Humber Valley</option>
+								<option value="1">Eglinton East</option>
+								<option value="2">Elms-Old Rexdale</option>
+								<option value="2">Englemount-Lawrence</option>
+								<option value="2">Eringate-Centennial-West Deane</option>
+								<option value="3">Etobicoke West Mall</option>
+								<option value="2">Flemingdon Park</option>
+								<option value="2">Forest Hill North</option>
+								<option value="2">Forest Hill South</option>
+								<option value="1">Glenfield-Jane Heights</option>
+								<option value="2">Gloucester-South Nepean</option>
+								<option value="2">Gloucester-Southgate</option>
+								<option value="2">Greenwood-Coxwell</option>
+								<option value="2">Guildwood</option>
+								<option value="2">Henry Farm</option>
+								<option value="2">High Park North</option>
+								<option value="3">High Park-Swansea</option>
+								<option value="2">Highland Creek</option>
+								<option value="2">Hillcrest Village</option>
+								<option value="2">Humber Heights-Westmount</option>
+								<option value="1">Humber Summit</option>
+								<option value="2">Humbermede</option>
+								<option value="2">Humewood-Cedarvale</option>
+								<option value="2">Innes</option>
+								<option value="1">Ionview</option>
+								<option value="2">Islington-City Centre West</option>
+								<option value="2">Junction Area</option>
+								<option value="2">Kanata North</option>
+								<option value="2">Kanata South</option>
+								<option value="1">Keelesdale-Eglinton West</option>
+								<option value="2">Kennedy Park</option>
+								<option value="2">Kensington-Chinatown</option>
+								<option value="2">Kingsview Village-The Westway</option>
+								<option value="3">Kingsway South</option>
+								<option value="3">Kitchissippi</option>
+								<option value="2">Knoxdale-Merivale</option>
+								<option value="2">Lambton Baby Point</option>
+								<option value="2">L'Amoreaux</option>
+								<option value="2">Lansing-Westgate</option>
+								<option value="2">Lawrence Park North</option>
+								<option value="3">Lawrence Park South</option>
+								<option value="2">Leaside-Bennington</option>
+								<option value="2">Little Portugal</option>
+								<option value="2">Long Branch</option>
+								<option value="1">Malvern</option>
+								<option value="2">Maple Leaf</option>
+								<option value="3">Markland Wood</option>
+								<option value="2">Milliken</option>
+								<option value="3">Mimico (includes Humber Bay Shores)</option>
+								<option value="2">Morningside</option>
+								<option value="3">Moss Park</option>
+								<option value="1">Mount Dennis</option>
+								<option value="1">Mount Olive-Silverstone-Jamestown</option>
+								<option value="3">Mount Pleasant East</option>
+								<option value="2">Mount Pleasant West</option>
+								<option value="2">New Toronto</option>
+								<option value="2">Newtonbrook East</option>
+								<option value="2">Newtonbrook West</option>
+								<option value="3">Niagara</option>
+								<option value="2">North Riverdale</option>
+								<option value="2">North St.James Town</option>
+								<option value="2">Oakridge</option>
+								<option value="2">Oakwood Village</option>
+								<option value="2">O'Connor-Parkview</option>
+								<option value="2">Old East York</option>
+								<option value="2">Orleans</option>
+								<option value="3">Osgoode</option>
+								<option value="2">Palmerston-Little Italy</option>
+								<option value="2">Parkwoods-Donalda</option>
+								<option value="2">Pelmo Park-Humberlea</option>
+								<option value="2">Playter Estates-Danforth</option>
+								<option value="1">Pleasant View</option>
+								<option value="3">Princess-Rosethorn</option>
+								<option value="2">Regent Park</option>
+								<option value="2">Rexdale-Kipling</option>
+								<option value="2">Rideau-Goulbourn</option>
+								<option value="2">Rideau-Rockcliffe</option>
+								<option value="2">Rideau-Vanier</option>
+								<option value="2">River</option>
+								<option value="2">Rockcliffe-Smythe</option>
+								<option value="3">Roncesvalles</option>
+								<option value="3">Rosedale-Moore Park</option>
+								<option value="2">Rouge</option>
+								<option value="3">Runnymede-Bloor West Village</option>
+								<option value="3">Rustic</option>
+								<option value="2">Scarborough Village</option>
+								<option value="2">Somerset</option>
+								<option value="2">South Parkdale</option>
+								<option value="3">South Riverdale</option>
+								<option value="2">St.Andrew-Windfields</option>
+								<option value="1">Steeles</option>
+								<option value="2">Stittsville-Kanata West</option>
+								<option value="2">Stonegate-Queensway</option>
+								<option value="2">Tam O'Shanter-Sullivan</option>
+								<option value="2">Taylor-Massey</option>
+								<option value="3">The Beaches</option>
+								<option value="2">Thistletown-Beaumond Heights</option>
+								<option value="2">Thorncliffe Park</option>
+								<option value="2">Trinity-Bellwoods</option>
+								<option value="2">University</option>
+								<option value="1">Victoria Village</option>
+								<option value="3">Waterfront Communities-The Island</option>
+								<option value="3">West Carleton-March</option>
+								<option value="2">West Hill</option>
+								<option value="2">West Humber-Clairville</option>
+								<option value="2">Westminster-Branson</option>
+								<option value="2">Weston</option>
+								<option value="2">Weston-Pellam Park</option>
+								<option value="2">Wexford/Maryvale</option>
+								<option value="2">Willowdale East</option>
+								<option value="2">Willowdale West</option>
+								<option value="2">Willowridge-Martingrove-Richview</option>
+								<option value="2">Woburn</option>
+								<option value="3">Woodbine Corridor</option>
+								<option value="2">Woodbine-Lumsden</option>
+								<option value="2">Wychwood</option>
+								<option value="3">Yonge-Eglinton</option>
+								<option value="2">Yonge-St.Clair</option>
+								<option value="1">York University Heights</option>
+								<option value="2">Yorkdale-Glen Park</option>
+						</select>
+					</td>
+				</tr>
+				
+				<tr align="left">
+					<td>Number of Amenities provided</td>
+					<td><input type="number" name="amenities_num" placeholder="Number of amenities" min="0" max="100" required="required" style="width:60%"/></td>
+				</tr align="left">
+				<tr align="left">
+					<td>Kitchen Amenities</td>
+					<td><input type="number" name="amen_group_kitchen" placeholder="Number of kitchen Amenities" min="0" max="15" required="required"style="width:60%" /></td>
+				</tr>
+				<tr align="left">
+					<td>Cleaning Amenities</td>
+					<td><input type="number" name="amen_group_cleaning" placeholder="Number of Cleaning Amenities" min="0" max="10" required="required" style="width:60%"/></td>
+				</tr>
+				<tr align="left">
+					<td>Safety Amenities</td>
+					<td><input type="number" name="amen_group_safety" placeholder="Number of Safety Amenities" min="0" max="5" required="required" style="width:60%" /></td>
+				</tr>
+				<tr align="left">
+					<td>Household Amenities</td>
+					<td><input type="number" name="amen_group_household" placeholder="Number of Household Amenities" min="0" max="15" required="required" style="width:60%"/></td>
+				</tr>
+				<tr align="left">
+					<td>Bedroom Amenities</td>
+					<td><input type="number" name="amen_group_bedroom" placeholder="Number of Bedroom Amenities" min="0" max="5" required="required" style="width:60%"/></td>
+				</tr>
+				<tr align="left">
+					<td>Electronics Amenities</td>
+					<td><input type="number" name="amen_group_electronics" placeholder="Number of Electronics Amenities" min="0" max="5" required="required"style="width:60%" /></td>
+				</tr>
+				<tr align="left">
+					<td>Extras Spaces Amenities</td>
+					<td><input type="number" name="amen_group_extra_spaces" placeholder="Number of Extras Spaces Amenities" min="0" max="10" required="required" style="width:60%" /></td>
+				</tr>
+			</table>
+			<br>
+				<button type="submit" >Predict Airbnb Rental Price</button>
+			</form>
+
+		   <br>
+		   <br>
+		   {{ prediction_text }}
+
+		</div>
+</div>
+
+<!-- About Section -->
+<div class="w3-container" style="padding:128px 16px" id="about">
+  <h3 class="w3-center">ABOUT OUR CAPSTONE PROJECT</h3>
+  <p class="w3-center w3-large">Objective</p>
+  <div class="w3-row-padding w3-center" style="margin-top:64px">
+    <div class="w3-quarter">
+      <i class="fa fa-dollar w3-margin-bottom w3-jumbo w3-center"></i>
+      <p class="w3-large">Rental Price Prediction</p>
+      <p>Determine your rental price of your property</p>
+    </div>
+    <div class="w3-quarter">
+      <i class="fa fa-line-chart  w3-margin-bottom w3-jumbo"></i>
+      <p class="w3-large">Airbnb Trend Analysis</p>
+      <p>Dashboard visualization to understand existing business patterns for expansion</p>
+    </div>
+    <div class="w3-quarter">
+      <i class="fa fa-search w3-margin-bottom w3-jumbo"></i>
+      <p class="w3-large">Reviews Analysis</p>
+      <p>Explore your reviews</p>
+    </div>
+    <div class="w3-quarter">
+      <i class="fa fa-cog w3-margin-bottom w3-jumbo"></i>
+      <p class="w3-large">Support</p>
+      <p>Contact us if you are facing any technical issues.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- Team Section -->
+<div class="w3-container" style="padding:128px 16px" id="team">
+  <h3 class="w3-center">THE TEAM</h3>
+  <p class="w3-center w3-large">Guided Under Prof.Sodiq Shofoluwe</p>
+  <div class="w3-row-padding w3-grayscale" style="margin-top:64px">
+    <div class="w3-col l3 m6 w3-margin-bottom">
+      <div class="w3-card">
+        <img src="{{ url_for('static', filename='abhishek.png') }}" alt="Abhishek" style="width:100%" height="410">
+        <div class="w3-container">
+          <h3>Abhishek Atmaram Pagade</h3>
+          <p class="w3-opacity">Post-Graduate Student at St. Clair College</p>
+          <p><button class="w3-button w3-light-grey w3-block"><i class="fa fa-envelope"></i> w0769622@myscc.ca</button></p>
+        </div>
+      </div>
+    </div>
+    <div class="w3-col l3 m6 w3-margin-bottom">
+      <div class="w3-card">
+        <img src="{{ url_for('static', filename='mayuri.png') }}" alt="Mayuri" style="width:100%" height="410">
+        <div class="w3-container">
+          <h3>Mayuri Kanaiyalal Ramrakhiyani</h3>
+          <p class="w3-opacity">Post-Graduate Student at St. Clair College</p>
+          <p><button class="w3-button w3-light-grey w3-block"><i class="fa fa-envelope"></i> w0773662@myscc.ca</button></p>
+        </div>
+      </div>
+    </div>
+    <div class="w3-col l3 m6 w3-margin-bottom">
+      <div class="w3-card">
+        <img src="{{ url_for('static', filename='rishabh.jpeg') }}" alt="Rishabh" style="width:100%" height="410">
+        <div class="w3-container">
+          <h3>Rishabh Dilip Patil</h3>
+          <p class="w3-opacity">Post-Graduate Student at St. Clair College</p>
+          <p><button class="w3-button w3-light-grey w3-block"><i class="fa fa-envelope"></i>w0770055@myscc.ca</button></p>
+        </div>
+      </div>
+    </div>
+    <div class="w3-col l3 m6 w3-margin-bottom">
+      <div class="w3-card">
+        <img src="{{ url_for('static', filename='saheli.jpg') }}" alt="Saheli" style="width:100%" height="410">
+        <div class="w3-container">
+          <h3>Saheli Vijay Konde</h3>
+          <p class="w3-opacity">Post-Graduate Student at St. Clair College</p>
+          <p><button class="w3-button w3-light-grey w3-block"><i class="fa fa-envelope"></i> w0769625@myscc.ca</button></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Contact Section -->
+<div class="w3-container w3-light-grey" style="padding:128px 16px" id="contact">
+  <h3 class="w3-center">CONTACT</h3>
+  <p class="w3-center w3-large">Lets get in touch. Send us a message:</p>
+  <div style="margin-top:48px">
+    <p><i class="fa fa-map-marker fa-fw w3-xxlarge w3-margin-right"></i> Windsor, CA</p>
+    <p><i class="fa fa-phone fa-fw w3-xxlarge w3-margin-right"></i> Phone: +1 2269758507</p>
+    <p><i class="fa fa-envelope fa-fw w3-xxlarge w3-margin-right"> </i> Email: mail@mail.com</p>
+    <br>
+    <form action="/action_page.php" target="_blank">
+      <p><input class="w3-input w3-border" type="text" placeholder="Name" required name="Name"></p>
+      <p><input class="w3-input w3-border" type="text" placeholder="Email" required name="Email"></p>
+      <p><input class="w3-input w3-border" type="text" placeholder="Subject" required name="Subject"></p>
+      <p><input class="w3-input w3-border" type="text" placeholder="Message" required name="Message"></p>
+      <p>
+        <button class="w3-button w3-black" type="submit">
+          <i class="fa fa-paper-plane"></i> SEND MESSAGE
+        </button>
+      </p>
+    </form>
+    <!-- Image of location/map -->
+  </div>
+</div>
+
+<!-- Dashboard -->
+<div class="w3-container w3-light-grey" style="padding:35px 16px" id="trend">
+	<h1 class="w3-center w3-black" style="text-align:center">Overall Analysis</h1>
+	<div class='tableauPlaceholder' id='viz1649784933200' style='position: relative'><noscript><a href='#'><img alt='Dashboard ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;In&#47;Initialization&#47;Dashboard&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='site_root' value='' /><param name='name' value='Initialization&#47;Dashboard' /><param name='tabs' value='no' /><param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;In&#47;Initialization&#47;Dashboard&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /><param name='language' value='en-US' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1649784933200');                    var vizElement = divElement.getElementsByTagName('object')[0];                    if ( divElement.offsetWidth > 800 ) { vizElement.style.width='1650px';vizElement.style.height='877px';} else if ( divElement.offsetWidth > 500 ) { vizElement.style.width='1650px';vizElement.style.height='877px';} else { vizElement.style.width='100%';vizElement.style.height='1677px';}                     var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>
+	<h1 style="text-align:center">Ottawa</h1>
+	<div class='tableauPlaceholder' id='viz1649804540678' style='position: relative'><noscript><a href='#'><img alt='Dashboard 1 ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;ot&#47;ottawa_airbnb&#47;Dashboard1&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='site_root' value='' /><param name='name' value='ottawa_airbnb&#47;Dashboard1' /><param name='tabs' value='no' /><param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;ot&#47;ottawa_airbnb&#47;Dashboard1&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /><param name='language' value='en-US' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1649804540678');                    var vizElement = divElement.getElementsByTagName('object')[0];                    if ( divElement.offsetWidth > 800 ) { vizElement.style.width='1600px';vizElement.style.height='827px';} else if ( divElement.offsetWidth > 500 ) { vizElement.style.width='1600px';vizElement.style.height='827px';} else { vizElement.style.width='100%';vizElement.style.height='1527px';}                     var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>
+	<h1 style="text-align:center""font-family:Times new roman;">Toronto</h1>
+	<div class='tableauPlaceholder' id='viz1649804402426' style='position: relative'><noscript><a href='#'><img alt='Dashboard 1 ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;To&#47;Toronto_airbnb&#47;Dashboard1&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='site_root' value='' /><param name='name' value='Toronto_airbnb&#47;Dashboard1' /><param name='tabs' value='no' /><param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;To&#47;Toronto_airbnb&#47;Dashboard1&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /><param name='language' value='en-US' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1649804402426');                    var vizElement = divElement.getElementsByTagName('object')[0];                    if ( divElement.offsetWidth > 800 ) { vizElement.style.width='1650px';vizElement.style.height='877px';} else if ( divElement.offsetWidth > 500 ) { vizElement.style.width='1650px';vizElement.style.height='877px';} else { vizElement.style.width='100%';vizElement.style.height='1527px';}                     var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>
+
+</div>
+
+
+<!-- Review Dashboard -->
+<div class="w3-container w3-light-grey" style="padding:35px 16px" id="review">
+	<h1 class="w3-center w3-black" style="text-align:center">Review Analysis</h1>
+
+<div class='tableauPlaceholder' id='viz1649873281901' style='position: relative'><noscript><a href='#'><img alt='Reviews Analysis ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;re&#47;reviews_16498717289810&#47;Dashboard1&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='site_root' value='' /><param name='name' value='reviews_16498717289810&#47;Dashboard1' /><param name='tabs' value='no' /><param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;re&#47;reviews_16498717289810&#47;Dashboard1&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /><param name='language' value='en-US' /><param name='filter' value='publish=yes' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1649873281901');                    var vizElement = divElement.getElementsByTagName('object')[0];                    if ( divElement.offsetWidth > 800 ) { vizElement.style.width='100%';vizElement.style.height='1367px';} else if ( divElement.offsetWidth > 500 ) { vizElement.style.width='1300px';vizElement.style.height='577px';} else { vizElement.style.width='100%';vizElement.style.height='1727px';}                     var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>
+</div>
+<!-- Footer -->
+<footer class="w3-center w3-black w3-padding-64">
+  <a href="#home" class="w3-button w3-light-grey"><i class="fa fa-arrow-up w3-margin-right"></i>To the top</a>
+  <div class="w3-xlarge w3-section">
+    <i class="fa fa-facebook-official w3-hover-opacity"></i>
+    <i class="fa fa-instagram w3-hover-opacity"></i>
+    <i class="fa fa-snapchat w3-hover-opacity"></i>
+    <i class="fa fa-pinterest-p w3-hover-opacity"></i>
+    <i class="fa fa-twitter w3-hover-opacity"></i>
+    <i class="fa fa-linkedin w3-hover-opacity"></i>
+  </div>
+</footer>
+ 
+<script>
+// Modal Image Gallery
+function onClick(element) {
+  document.getElementById("img01").src = element.src;
+  document.getElementById("modal01").style.display = "block";
+  var captionText = document.getElementById("caption");
+  captionText.innerHTML = element.alt;
+}
+
+
+// Toggle between showing and hiding the sidebar when clicking the menu icon
+var mySidebar = document.getElementById("mySidebar");
+
+function w3_open() {
+  if (mySidebar.style.display === 'block') {
+    mySidebar.style.display = 'none';
+  } else {
+    mySidebar.style.display = 'block';
+  }
+}
+
+// Close the sidebar with the close button
+function w3_close() {
+    mySidebar.style.display = "none";
+}
+</script>
+
+</body>
+</html>
